@@ -26,13 +26,13 @@ namespace DudeWithAnApi.Services
             return await _quotePrintRepository.GetQuotePrintsByMonth(year);
         }
 
-        public void AddPrint(Quote quote)
+        public async Task AddPrint(Quote quote)
         {
             QuotePrint print = new QuotePrint();
             print.QuoteId = quote.Id;
             print.PrintedAt = DateTime.UtcNow;
             print.RequestId = "???";
-            _quotePrintRepository.AddAsync(print);
+            await _quotePrintRepository.AddAsync(print);
         }
     }
 }

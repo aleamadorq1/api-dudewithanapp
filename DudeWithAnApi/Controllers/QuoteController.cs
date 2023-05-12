@@ -68,7 +68,7 @@ namespace DudeWithAnApi.Controllers
                 // Save the quote in the cache
                 _memoryCache.Set(cacheKey, quote, cacheOptions);
             }
-            _quotePrintService.AddPrint(quote);
+            await _quotePrintService.AddPrint(quote);
             return Ok(quote);
         }
 

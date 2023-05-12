@@ -8,7 +8,7 @@ namespace DudeWithAnApi.Interfaces
     {
         Task<IEnumerable<QuotePrintByDay>> GetQuotePrintsByDay(int year, int month);
         Task<IEnumerable<QuotePrintByMonth>> GetQuotePrintsByMonth(int year);
-        void AddPrint(Quote quote);
+        Task AddPrint(Quote quote);
     }
 }
 

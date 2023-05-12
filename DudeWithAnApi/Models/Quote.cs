@@ -9,6 +9,8 @@ namespace DudeWithAnApi.Models
         public int Id { get; set; }
         [Required]
         public string QuoteText { get; set; }
+        public string? SecondaryText { get; set; }
+        public string? Url { get; set; }
         public DateTime CreationDate { get; set; }
     }
 

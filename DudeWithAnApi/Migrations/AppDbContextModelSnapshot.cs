@@ -30,6 +30,12 @@ namespace DudeWithAnApi.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("SecondaryText")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Url")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
                     b.ToTable("Quotes");
@@ -91,7 +97,6 @@ namespace DudeWithAnApi.Migrations
 
                     b.Navigation("Quote");
                 });
-#pragma warning restore 612, 618
         }
     }
 }

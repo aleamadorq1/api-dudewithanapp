@@ -29,8 +29,8 @@ namespace DudeWithAnApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Quote>>> GetQuotes()
         {
-            var quotes = await _quoteRepository.GetAllAsync();
-            return Ok(quotes.OrderByDescending(q => q.CreationDate));
+            var quotes = await _quoteService.GetQuotesAsync();
+            return Ok(quotes);
         }
 
         // GET: api/Quote/5
@@ -76,6 +76,7 @@ namespace DudeWithAnApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Quote>> CreateQuote(Quote quote)
         {
+            quote.IsDeleted = 0;
             quote.CreationDate = DateTime.UtcNow;
             await _quoteRepository.AddAsync(quote);
             return CreatedAtAction("GetQuote", new { id = quote.Id }, quote);
@@ -90,7 +91,7 @@ namespace DudeWithAnApi.Controllers
                 return BadRequest();
             }
 
-            await _quoteRepository.UpdateAsync(quote);
+            await _quoteService.UpdateQuoteAsync(quote);
 
             return NoContent();
         }
@@ -105,7 +106,7 @@ namespace DudeWithAnApi.Controllers
                 return NotFound();
             }
 
-            await _quoteRepository.DeleteAsync(quote.Id);
+            await _quoteService.DeleteQuoteAsync(quote.Id);
 
             return NoContent();
         }

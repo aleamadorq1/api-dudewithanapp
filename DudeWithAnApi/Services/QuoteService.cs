@@ -23,6 +23,21 @@ namespace DudeWithAnApi.Services
             var quote = _quoteRepository.GetLatestAsync();
             return quote;
         }
+
+        public async Task<IEnumerable<Quote>> GetQuotesAsync()
+        {
+            return await _quoteRepository.GetQuotesAsync();
+        }
+
+        public async Task DeleteQuoteAsync(int id)
+        {
+            await _quoteRepository.DeleteQuoteAsync(id);
+        }
+
+        public async Task UpdateQuoteAsync(Quote quote)
+        {
+            await _quoteRepository.UpdateQuoteAsync(quote);
+        }
     }
 }
 

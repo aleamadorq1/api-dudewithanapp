@@ -29,7 +29,19 @@ namespace DudeWithAnApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Quote>>> GetQuotes()
         {
-            var quotes = await _quoteService.GetQuotesAsync();
+            const string cacheKey = "quotes";
+            if (!_memoryCache.TryGetValue(cacheKey, out IEnumerable<Quote> quotes))
+            {
+                quotes = await _quoteService.GetQuotesAsync();
+
+                // Set cache options
+                var cacheOptions = new MemoryCacheEntryOptions()
+                    .SetAbsoluteExpiration(TimeSpan.FromHours(6)); // Adjust the cache duration as needed
+
+                // Save the quote in the cache
+                _memoryCache.Set(cacheKey, quotes, cacheOptions);
+            }
+
             return Ok(quotes);
         }
 
@@ -79,6 +91,7 @@ namespace DudeWithAnApi.Controllers
             quote.IsDeleted = 0;
             quote.CreationDate = DateTime.UtcNow;
             await _quoteRepository.AddAsync(quote);
+            ClearCache();
             return CreatedAtAction("GetQuote", new { id = quote.Id }, quote);
         }
 
@@ -92,7 +105,7 @@ namespace DudeWithAnApi.Controllers
             }
 
             await _quoteService.UpdateQuoteAsync(quote);
-
+            ClearCache();
             return NoContent();
         }
 
@@ -107,10 +120,16 @@ namespace DudeWithAnApi.Controllers
             }
 
             await _quoteService.DeleteQuoteAsync(quote.Id);
+            ClearCache();
 
             return NoContent();
         }
 
+        private void ClearCache()
+        {
+            _memoryCache.Remove("quotes");
+            _memoryCache.Remove("latest_quote");
+        }
 
     }
 }

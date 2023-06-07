@@ -11,6 +11,7 @@ namespace DudeWithAnApi.Interfaces
         Task<IEnumerable<Quote>> GetQuotesAsync();
         Task DeleteQuoteAsync(int id);
         Task UpdateQuoteAsync(Quote quote);
+        Task ToggleQuoteAsync(int id);
     }
 }
 

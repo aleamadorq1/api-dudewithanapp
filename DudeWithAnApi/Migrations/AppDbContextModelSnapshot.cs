@@ -36,6 +36,9 @@ namespace DudeWithAnApi.Migrations
                     b.Property<string>("Url")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("IsActive")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("IsDeleted")
                         .HasColumnType("INTEGER");
 

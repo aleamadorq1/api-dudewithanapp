@@ -32,7 +32,7 @@ namespace DudeWithAnApi.Services
             print.QuoteId = quote.Id;
             print.PrintedAt = DateTime.UtcNow;
             print.RequestId = "???";
-            await _quotePrintRepository.AddAsync(print);
+            _quotePrintRepository.AddMetricsAsync(print);
         }
     }
 }

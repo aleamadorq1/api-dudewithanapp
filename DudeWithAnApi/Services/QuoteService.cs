@@ -34,6 +34,11 @@ namespace DudeWithAnApi.Services
             await _quoteRepository.DeleteQuoteAsync(id);
         }
 
+        public async Task ToggleQuoteAsync(int id)
+        {
+            await _quoteRepository.ToggleQuoteAsync(id);
+        }
+
         public async Task UpdateQuoteAsync(Quote quote)
         {
             await _quoteRepository.UpdateQuoteAsync(quote);

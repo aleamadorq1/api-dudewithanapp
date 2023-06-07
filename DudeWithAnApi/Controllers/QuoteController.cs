@@ -80,7 +80,7 @@ namespace DudeWithAnApi.Controllers
                 // Save the quote in the cache
                 _memoryCache.Set(cacheKey, quote, cacheOptions);
             }
-            await _quotePrintService.AddPrint(quote);
+            _quotePrintService.AddPrint(quote);
             return Ok(quote);
         }
 
@@ -120,6 +120,22 @@ namespace DudeWithAnApi.Controllers
             }
 
             await _quoteService.DeleteQuoteAsync(quote.Id);
+            ClearCache();
+
+            return NoContent();
+        }
+
+        // DELETE: api/Quote/5
+        [HttpPost("{id}/toggle")]
+        public async Task<IActionResult> ToggleQuoteAsync(int id)
+        {
+            var quote = await _quoteRepository.GetByIdAsync(id);
+            if (quote == null)
+            {
+                return NotFound();
+            }
+
+            await _quoteService.ToggleQuoteAsync(quote.Id);
             ClearCache();
 
             return NoContent();

@@ -31,7 +31,14 @@ namespace DudeWithAnApi.Repositories
             quote.IsDeleted = 1;
             return UpdateAsync(quote);
         }
-        
+
+        public Task ToggleQuoteAsync(int id)
+        {
+            Quote quote = GetByIdAsync(id).Result;
+            quote.IsActive = quote.IsActive ==0 ? 1:0;
+            return UpdateAsync(quote);
+        }
+
         public Task UpdateQuoteAsync(Quote quote)
         {
             Quote oldQuote = GetByIdAsync(quote.Id).Result;
@@ -42,6 +49,7 @@ namespace DudeWithAnApi.Repositories
             newQuote.SecondaryText = quote.SecondaryText;
             newQuote.Url = quote.Url;
             newQuote.CreationDate = DateTime.UtcNow;
+            newQuote.IsActive = quote.IsActive;
             newQuote.IsDeleted = 0;
             return AddAsync(newQuote);
         }

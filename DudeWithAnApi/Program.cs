@@ -12,6 +12,10 @@ using Microsoft.EntityFrameworkCore;
 using DudeWithAnApi.Models;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,6 +53,43 @@ builder.Services.AddScoped<IQuotePrintRepository, QuotePrintRepository>();
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["JwtConfig:Secret"])),
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ClockSkew = TimeSpan.Zero
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnChallenge = context =>
+            {
+                // Skip the default logic.
+                context.HandleResponse();
+
+                // Use the HttpContext to write a response.
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                context.Response.ContentType = "application/json";
+
+                // Include the original error message in the response for debugging.
+                var message = context.Error ?? "Invalid token";
+                return context.Response.WriteAsync(JsonSerializer.Serialize(new { message }));
+            },
+                OnAuthenticationFailed = context =>
+                {
+                    // Log the error or return it in the response for debugging
+                    Console.WriteLine(context.Exception);
+
+                    return Task.CompletedTask;
+                }
+
+        };
+    });
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -69,8 +110,9 @@ app.UseCors(builder =>
 app.UseHttpsRedirection();
 
 app.UseRouting(); // Add this line
-
+app.UseAuthentication();
 app.UseAuthorization();
+
 
 app.UseEndpoints(endpoints => // Update this line
 {

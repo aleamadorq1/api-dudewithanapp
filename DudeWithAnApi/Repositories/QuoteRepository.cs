@@ -22,7 +22,7 @@ namespace DudeWithAnApi.Repositories
 
         public async Task<IEnumerable<Quote>> GetQuotesAsync()
         {
-            return await _context.Quotes.Where(q => q.IsDeleted == 0).OrderByDescending(q => q.Id).ToListAsync();
+            return await _context.Quotes.Where(q => q.IsDeleted == 0).OrderByDescending(q => q.IsActive).ThenByDescending(q => q.Id).ToListAsync();
         }
 
         public Task DeleteQuoteAsync(int id)

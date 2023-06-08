@@ -5,10 +5,12 @@ using DudeWithAnApi.Models;
 using DudeWithAnApi.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
 using DudeWithAnApi.ResponseDOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DudeWithAnApi.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public class QuotePrintController : ControllerBase
     {

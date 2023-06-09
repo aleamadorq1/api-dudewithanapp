@@ -1,5 +1,4 @@
 ﻿using System;
-using DudeWithAnApi.Interfaces;
 using DudeWithAnApi.Models;
 using DudeWithAnApi.Repositories;
 using DudeWithAnApi.ResponseDOs;
@@ -7,6 +6,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DudeWithAnApi.Services
 {
+    public interface IQuotePrintService
+    {
+        Task<IEnumerable<QuotePrintByDay>> GetQuotePrintsByDay(int year, int month);
+        Task<IEnumerable<QuotePrintByMonth>> GetQuotePrintsByMonth(int year);
+        Task AddPrint(Quote quote);
+    }
+
     public class QuotePrintService : IQuotePrintService
     {
         private readonly IQuotePrintRepository _quotePrintRepository;

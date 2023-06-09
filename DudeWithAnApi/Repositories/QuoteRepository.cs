@@ -1,11 +1,19 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using DudeWithAnApi.Models;
-using DudeWithAnApi.Interfaces;
 using DudeWithAnApi.ResponseDOs;
 
 namespace DudeWithAnApi.Repositories
 {
+    public interface IQuoteRepository : IRepository<Quote>
+    {
+        Task<Quote> GetLatestAsync();
+        Task<IEnumerable<Quote>> GetQuotesAsync();
+        Task DeleteQuoteAsync(int id);
+        Task UpdateQuoteAsync(Quote newQuote);
+        Task ToggleQuoteAsync(int id);
+    }
+
     public class QuoteRepository : Repository<Quote>, IQuoteRepository
     {
         private readonly AppDbContext _context;

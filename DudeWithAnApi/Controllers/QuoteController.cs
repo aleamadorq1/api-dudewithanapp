@@ -2,11 +2,11 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using DudeWithAnApi.Models;
-using DudeWithAnApi.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
 using DudeWithAnApi.ResponseDOs;
 using DudeWithAnApi.Services;
 using Microsoft.AspNetCore.Authorization;
+using DudeWithAnApi.Repositories;
 
 namespace DudeWithAnApi.Controllers
 {

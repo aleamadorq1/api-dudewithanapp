@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using DudeWithAnApi.Interfaces;
 using DudeWithAnApi.Repositories;
 using DudeWithAnApi.Services;
 using DudeWithAnApi;
@@ -43,11 +42,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddMemoryCache();
 builder.Services.AddCors();
 
-builder.Services.AddScoped<IUserService, UserService>();
+
 builder.Services.AddScoped<IQuoteService, QuoteService>();
 builder.Services.AddScoped<IQuotePrintService, QuotePrintService>();
 
-builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IQuoteRepository, QuoteRepository>();
 builder.Services.AddScoped<IQuotePrintRepository, QuotePrintRepository>();
 

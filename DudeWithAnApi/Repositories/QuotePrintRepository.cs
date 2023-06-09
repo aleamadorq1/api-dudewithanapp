@@ -1,11 +1,16 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using DudeWithAnApi.Models;
-using DudeWithAnApi.Interfaces;
 using DudeWithAnApi.ResponseDOs;
 
 namespace DudeWithAnApi.Repositories
 {
+    public interface IQuotePrintRepository : IRepository<QuotePrint>
+    {
+        Task<IEnumerable<QuotePrintByDay>> GetQuotePrintsByDay(int year, int month);
+        Task<IEnumerable<QuotePrintByMonth>> GetQuotePrintsByMonth(int year);
+    }
+
     public class QuotePrintRepository : Repository<QuotePrint>, IQuotePrintRepository
     {
         private readonly AppDbContext _context;

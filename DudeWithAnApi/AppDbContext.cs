@@ -5,7 +5,6 @@ namespace DudeWithAnApi
 {
     public class AppDbContext : DbContext
     {
-        public DbSet<User> Users { get; set; }
         public DbSet<Quote> Quotes { get; set; }
         public DbSet<QuotePrint> QuotePrints { get; set; }
 

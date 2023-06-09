@@ -1,5 +1,4 @@
 ﻿using System;
-using DudeWithAnApi.Interfaces;
 using DudeWithAnApi.Models;
 using DudeWithAnApi.Repositories;
 using DudeWithAnApi.ResponseDOs;
@@ -7,6 +6,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DudeWithAnApi.Services
 {
+    public interface IQuoteService
+    {
+        Task<Quote> GetLatest();
+        Task<IEnumerable<Quote>> GetQuotesAsync();
+        Task DeleteQuoteAsync(int id);
+        Task UpdateQuoteAsync(Quote quote);
+        Task ToggleQuoteAsync(int id);
+    }
+
     public class QuoteService : IQuoteService
     {
         private readonly IQuoteRepository _quoteRepository;

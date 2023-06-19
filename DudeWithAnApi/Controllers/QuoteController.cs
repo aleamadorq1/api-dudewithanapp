@@ -29,12 +29,20 @@ namespace DudeWithAnApi.Controllers
         }
 
         [HttpGet]
+        [HttpGet("all")]
         public async Task<ActionResult<IEnumerable<Quote>>> GetQuotes()
+        {
+            var quotes = await _quoteService.GetQuotesAsync();
+            return Ok(quotes);
+        }
+
+        [HttpGet("published")]
+        public async Task<ActionResult<IEnumerable<Quote>>> GetQuotesPublished()
         {
             const string cacheKey = "quotes";
             if (!_memoryCache.TryGetValue(cacheKey, out IEnumerable<Quote> quotes))
             {
-                quotes = await _quoteService.GetQuotesAsync();
+                quotes = await _quoteService.GetQuotesPublishedAsync();
 
                 // Set cache options
                 var cacheOptions = new MemoryCacheEntryOptions()
@@ -99,16 +107,16 @@ namespace DudeWithAnApi.Controllers
 
         // PUT: api/Quote/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateQuote(int id, Quote quote)
+        public async Task<ActionResult<Quote>> UpdateQuote(int id, Quote quote)
         {
             if (id != quote.Id)
             {
                 return BadRequest();
             }
 
-            await _quoteService.UpdateQuoteAsync(quote);
+            var newQuote = await _quoteService.UpdateQuoteAsync(quote);
             ClearCache();
-            return NoContent();
+            return Ok(newQuote);
         }
 
         // DELETE: api/Quote/5

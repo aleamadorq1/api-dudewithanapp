@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +13,7 @@ namespace DudeWithAnApi.Repositories
         void AddMetricsAsync(T entity);
         Task<T> UpdateAsync(T entity);
         Task<bool> DeleteAsync(int id);
+        Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
     }
 
     public class Repository<T> : IRepository<T> where T : class
@@ -66,6 +68,11 @@ namespace DudeWithAnApi.Repositories
             _dbSet.Remove(entity);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _context.Set<T>().Where(predicate).ToListAsync();
         }
     }
 }

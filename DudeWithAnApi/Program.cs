@@ -45,6 +45,7 @@ builder.Services.AddCors();
 
 builder.Services.AddScoped<IQuoteService, QuoteService>();
 builder.Services.AddScoped<IQuotePrintService, QuotePrintService>();
+builder.Services.AddScoped<IQuoteTranslationService, QuoteTranslationService>();
 
 builder.Services.AddScoped<IQuoteRepository, QuoteRepository>();
 builder.Services.AddScoped<IQuotePrintRepository, QuotePrintRepository>();

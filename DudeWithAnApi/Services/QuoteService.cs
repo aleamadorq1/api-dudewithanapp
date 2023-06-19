@@ -1,8 +1,5 @@
-﻿using System;
-using DudeWithAnApi.Models;
+﻿using DudeWithAnApi.Models;
 using DudeWithAnApi.Repositories;
-using DudeWithAnApi.ResponseDOs;
-using Microsoft.EntityFrameworkCore;
 
 namespace DudeWithAnApi.Services
 {
@@ -11,19 +8,21 @@ namespace DudeWithAnApi.Services
         Task<Quote> GetLatest();
         Task<IEnumerable<Quote>> GetQuotesAsync();
         Task DeleteQuoteAsync(int id);
-        Task UpdateQuoteAsync(Quote quote);
+        Task<Quote> UpdateQuoteAsync(Quote quote);
         Task ToggleQuoteAsync(int id);
+        Task<IEnumerable<Quote>> GetQuotesPublishedAsync();
+        Task<IEnumerable<QuoteTranslation>> GetTranslationsByQuoteId(int quoteId);
     }
 
     public class QuoteService : IQuoteService
     {
         private readonly IQuoteRepository _quoteRepository;
-        private readonly IRepository<QuotePrint> _quoteprintRepository;
+        private readonly IRepository<QuoteTranslation> _quoteTranslationRepository;
 
-        public QuoteService(IQuoteRepository userRepository, IRepository<QuotePrint> quotePrintRepository)
+        public QuoteService(IQuoteRepository userRepository, IRepository<QuoteTranslation> quoteTranslationRepository)
         {
             _quoteRepository = userRepository;
-            _quoteprintRepository = quotePrintRepository;
+            _quoteTranslationRepository = quoteTranslationRepository;
         }
 
         public Task<Quote> GetLatest()
@@ -37,6 +36,11 @@ namespace DudeWithAnApi.Services
             return await _quoteRepository.GetQuotesAsync();
         }
 
+        public async Task<IEnumerable<Quote>> GetQuotesPublishedAsync()
+        {
+            return await _quoteRepository.GetQuotesPublishedAsync();
+        }
+
         public async Task DeleteQuoteAsync(int id)
         {
             await _quoteRepository.DeleteQuoteAsync(id);
@@ -47,9 +51,14 @@ namespace DudeWithAnApi.Services
             await _quoteRepository.ToggleQuoteAsync(id);
         }
 
-        public async Task UpdateQuoteAsync(Quote quote)
+        public async Task<Quote> UpdateQuoteAsync(Quote quote)
         {
-            await _quoteRepository.UpdateQuoteAsync(quote);
+            return await _quoteRepository.UpdateQuoteAsync(quote);
+        }
+
+        public Task<IEnumerable<QuoteTranslation>> GetTranslationsByQuoteId(int quoteId)
+        {
+            return _quoteTranslationRepository.FindAsync(t => t.QuoteId == quoteId);
         }
     }
 }

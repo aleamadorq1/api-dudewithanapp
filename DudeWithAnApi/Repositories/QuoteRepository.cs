@@ -10,8 +10,9 @@ namespace DudeWithAnApi.Repositories
         Task<Quote> GetLatestAsync();
         Task<IEnumerable<Quote>> GetQuotesAsync();
         Task DeleteQuoteAsync(int id);
-        Task UpdateQuoteAsync(Quote newQuote);
+        Task<Quote> UpdateQuoteAsync(Quote newQuote);
         Task ToggleQuoteAsync(int id);
+        Task<IEnumerable<Quote>> GetQuotesPublishedAsync();
     }
 
     public class QuoteRepository : Repository<Quote>, IQuoteRepository
@@ -33,6 +34,11 @@ namespace DudeWithAnApi.Repositories
             return await _context.Quotes.Where(q => q.IsDeleted == 0).OrderByDescending(q => q.IsActive).ThenByDescending(q => q.Id).ToListAsync();
         }
 
+        public async Task<IEnumerable<Quote>> GetQuotesPublishedAsync()
+        {
+            return await _context.Quotes.Where(q => q.IsDeleted == 0 && q.IsActive == 1).OrderByDescending(q => q.IsActive).ThenByDescending(q => q.Id).ToListAsync();
+        }
+
         public Task DeleteQuoteAsync(int id)
         {
             Quote quote = GetByIdAsync(id).Result;
@@ -47,7 +53,7 @@ namespace DudeWithAnApi.Repositories
             return UpdateAsync(quote);
         }
 
-        public Task UpdateQuoteAsync(Quote quote)
+        public Task<Quote> UpdateQuoteAsync(Quote quote)
         {
             Quote oldQuote = GetByIdAsync(quote.Id).Result;
             oldQuote.IsDeleted = 1;

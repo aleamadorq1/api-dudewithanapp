@@ -7,6 +7,7 @@ namespace DudeWithAnApi
     {
         public DbSet<Quote> Quotes { get; set; }
         public DbSet<QuotePrint> QuotePrints { get; set; }
+        public DbSet<QuoteTranslation> QuoteTranslations { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

@@ -37,12 +37,12 @@ namespace DudeWithAnApi.Controllers
         }
 
         [HttpGet("published")]
-        public async Task<ActionResult<IEnumerable<Quote>>> GetQuotesPublished()
+        public async Task<ActionResult<IEnumerable<Quote>>> GetQuotesPublished(string? language)
         {
             const string cacheKey = "quotes";
             if (!_memoryCache.TryGetValue(cacheKey, out IEnumerable<Quote> quotes))
             {
-                quotes = await _quoteService.GetQuotesPublishedAsync();
+                quotes = await _quoteService.GetQuotesPublishedAsync(language is null ? "" : language);
 
                 // Set cache options
                 var cacheOptions = new MemoryCacheEntryOptions()
@@ -53,6 +53,20 @@ namespace DudeWithAnApi.Controllers
             }
 
             return Ok(quotes);
+        }
+
+        // GET: api/Quote/5
+        [HttpGet("{id}/translated")]
+        public async Task<ActionResult<Quote>> GetTranslatedQuote(int id, string? language)
+        {
+            var quote = await _quoteService.GetQuoteTranslatedAsync(id, language is null? "": language);
+
+            if (quote == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(quote);
         }
 
         // GET: api/Quote/5

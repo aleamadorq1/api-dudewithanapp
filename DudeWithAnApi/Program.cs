@@ -49,6 +49,7 @@ builder.Services.AddScoped<IQuoteTranslationService, QuoteTranslationService>();
 
 builder.Services.AddScoped<IQuoteRepository, QuoteRepository>();
 builder.Services.AddScoped<IQuotePrintRepository, QuotePrintRepository>();
+builder.Services.AddScoped<IQuoteTranslationRepository, QuoteTranslationRepository>();
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 

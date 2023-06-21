@@ -41,32 +41,5 @@ namespace DudeWithAnApi.Controllers
             return Ok();
         }
 
-        // PUT: api/Quote/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTranslation(int id, QuoteTranslation translation)
-        {
-            if (id != translation.Id)
-            {
-                return BadRequest();
-            }
-
-            await _quoteTranslationService.EditTranslation(translation);
-            return NoContent();
-        }
-
-        // DELETE: api/Quote/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTranslation(int id)
-        {
-            var translation = await _quoteTranslationRepository.GetByIdAsync(id);
-            if (translation == null)
-            {
-                return NotFound();
-            }
-
-            await _quoteTranslationService.DeleteTranslation(translation.Id);
-            return NoContent();
-        }
-
     }
 }

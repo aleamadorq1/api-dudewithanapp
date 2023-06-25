@@ -6,6 +6,7 @@ namespace DudeWithAnApi.Services
     public interface IQuoteTranslationService
     {
         Task AddTranslation(QuoteTranslation trans);
+        Task AddTranslationFile(IEnumerable<QuoteTranslation> trans);
         Task EditTranslation(QuoteTranslation trans);
         Task DeleteTranslation(int id);
         Task<IEnumerable<QuoteTranslation>> GetByQuoteId(int quoteId);
@@ -23,6 +24,11 @@ namespace DudeWithAnApi.Services
         public async Task AddTranslation(QuoteTranslation trans)
         {
             await _quoteTranslationRepository.AddAsync(trans);
+        }
+
+        public async Task AddTranslationFile(IEnumerable<QuoteTranslation> trans)
+        {
+            await _quoteTranslationRepository.AddRangeAsync(trans);
         }
 
         public async Task EditTranslation(QuoteTranslation trans)

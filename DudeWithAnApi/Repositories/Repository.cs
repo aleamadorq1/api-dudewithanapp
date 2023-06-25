@@ -14,6 +14,7 @@ namespace DudeWithAnApi.Repositories
         Task<T> UpdateAsync(T entity);
         Task<bool> DeleteAsync(int id);
         Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
+        Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> entities);
     }
 
     public class Repository<T> : IRepository<T> where T : class
@@ -73,6 +74,13 @@ namespace DudeWithAnApi.Repositories
         public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
         {
             return await _context.Set<T>().Where(predicate).ToListAsync();
+        }
+
+        public async Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> entities)
+        {
+            await _dbSet.AddRangeAsync(entities);
+            await _context.SaveChangesAsync();
+            return entities;
         }
     }
 }

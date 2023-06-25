@@ -26,7 +26,10 @@ namespace DudeWithAnApi.Repositories
 
         public async Task<Quote> GetLatestAsync()
         {
-            return await _context.Quotes.Where(q => q.IsDeleted == 0).OrderByDescending(q => q.Id).FirstOrDefaultAsync();
+            return await _context.Quotes
+            .Where(q => q.IsDeleted == 0 && q.IsActive == 1)
+            .OrderByDescending(q => q.Id)
+            .FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<Quote>> GetQuotesAsync()
@@ -64,8 +67,11 @@ namespace DudeWithAnApi.Repositories
             newQuote.Url = quote.Url;
             newQuote.CreationDate = DateTime.UtcNow;
             newQuote.IsActive = quote.IsActive;
+            newQuote.IsCSV = oldQuote.IsCSV;
             newQuote.IsDeleted = 0;
-            return AddAsync(newQuote);
+
+            var result = AddAsync(newQuote);
+            return result;
         }
     }
 }

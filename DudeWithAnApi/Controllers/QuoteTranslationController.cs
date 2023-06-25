@@ -41,5 +41,13 @@ namespace DudeWithAnApi.Controllers
             return Ok();
         }
 
+        // POST: api/Quote
+        [HttpPost("csv")]
+        public async Task<ActionResult<Quote>> CreateTranslationFile(IEnumerable<QuoteTranslation> translation)
+        {
+            await _quoteTranslationService.AddTranslationFile(translation);
+            return Ok();
+        }
+
     }
 }

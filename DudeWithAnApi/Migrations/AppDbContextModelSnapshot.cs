@@ -30,6 +30,9 @@ namespace DudeWithAnApi.Migrations
                 b.Property<int?>("IsDeleted")
                     .HasColumnType("INTEGER");
 
+                b.Property<int?>("IsCSV")
+                    .HasColumnType("INTEGER");
+
                 b.Property<string>("QuoteText")
                     .IsRequired()
                     .HasColumnType("TEXT");

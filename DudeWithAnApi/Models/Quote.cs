@@ -14,6 +14,7 @@ namespace DudeWithAnApi.Models
         public DateTime CreationDate { get; set; }
         public int? IsActive { get; set; }
         public int? IsDeleted { get; set; }
+        public int? IsCSV { get; set; }
     }
 
 }

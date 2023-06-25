@@ -39,19 +39,7 @@ namespace DudeWithAnApi.Controllers
         [HttpGet("published")]
         public async Task<ActionResult<IEnumerable<Quote>>> GetQuotesPublished(string? language)
         {
-            const string cacheKey = "quotes";
-            if (!_memoryCache.TryGetValue(cacheKey, out IEnumerable<Quote> quotes))
-            {
-                quotes = await _quoteService.GetQuotesPublishedAsync(language is null ? "" : language);
-
-                // Set cache options
-                var cacheOptions = new MemoryCacheEntryOptions()
-                    .SetAbsoluteExpiration(TimeSpan.FromHours(6)); // Adjust the cache duration as needed
-
-                // Save the quote in the cache
-                _memoryCache.Set(cacheKey, quotes, cacheOptions);
-            }
-
+            var quotes = await _quoteService.GetQuotesPublishedAsync(language is null ? "" : language);
             return Ok(quotes);
         }
 
@@ -85,24 +73,13 @@ namespace DudeWithAnApi.Controllers
 
         // GET: api/Quote/latest
         [HttpGet("latest")]
-        public async Task<ActionResult<Quote>> GetLatest()
+        public async Task<ActionResult<Quote>> GetLatest(string? language)
         {
-            const string cacheKey = "latest_quote";
-            if (!_memoryCache.TryGetValue(cacheKey, out Quote quote))
+            var quote = await _quoteService.GetLatest(language is null ? "" : language);
+
+            if (quote == null)
             {
-                quote = await _quoteService.GetLatest();
-
-                if (quote == null)
-                {
-                    return NotFound();
-                }
-
-                // Set cache options
-                var cacheOptions = new MemoryCacheEntryOptions()
-                    .SetAbsoluteExpiration(TimeSpan.FromHours(6)); // Adjust the cache duration as needed
-
-                // Save the quote in the cache
-                _memoryCache.Set(cacheKey, quote, cacheOptions);
+                return NotFound();
             }
             _quotePrintService.AddPrint(quote);
             return Ok(quote);

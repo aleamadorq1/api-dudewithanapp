@@ -5,7 +5,7 @@ namespace DudeWithAnApi.Services
 {
     public interface IQuoteService
     {
-        Task<Quote> GetLatest();
+        Task<Quote> GetLatest(string language);
         Task<IEnumerable<Quote>> GetQuotesAsync();
         Task DeleteQuoteAsync(int id);
         Task<Quote> UpdateQuoteAsync(Quote quote);
@@ -26,10 +26,11 @@ namespace DudeWithAnApi.Services
             _quoteTransRepository = translationRepository;
         }
 
-        public Task<Quote> GetLatest()
+        public async Task<Quote> GetLatest(string language)
         {
-            var quote = _quoteRepository.GetLatestAsync();
-            return quote;
+            var quote = await _quoteRepository.GetLatestAsync();
+            var translated = await GetQuoteTranslatedAsync(quote.Id, language);
+            return translated;
         }
 
         public async Task<IEnumerable<Quote>> GetQuotesAsync()
@@ -45,8 +46,11 @@ namespace DudeWithAnApi.Services
                 foreach (Quote quote in quotes)
                 {
                     QuoteTranslation quoteTranslation = await _quoteTransRepository.GetByQuoteAndLanguageAsync(quote.Id, language);
-                    quote.QuoteText = quoteTranslation.PrimaryText;
-                    quote.SecondaryText = quoteTranslation.SecondaryText;
+                    if (quoteTranslation is not null)
+                    {
+                        quote.QuoteText = quoteTranslation.PrimaryText;
+                        quote.SecondaryText = quoteTranslation.SecondaryText;
+                    }
                 }
             }
             return quotes;
@@ -79,7 +83,13 @@ namespace DudeWithAnApi.Services
 
         public async Task<Quote> UpdateQuoteAsync(Quote quote)
         {
-            return await _quoteRepository.UpdateQuoteAsync(quote);
+            var newQuote = await _quoteRepository.UpdateQuoteAsync(quote);
+            if (newQuote.IsCSV == 1)
+            {
+                _quoteTransRepository.MoveCsvTranslationsAsync(quote.Id, newQuote.Id);
+            }
+            
+            return newQuote; 
         }
 
         public Task<IEnumerable<QuoteTranslation>> GetTranslationsByQuoteId(int quoteId)

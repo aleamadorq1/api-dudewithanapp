@@ -1,17 +1,18 @@
 ﻿using DudeWithAnApi.Models;
 using DudeWithAnApi.Repositories;
+using DudeWithAnApi.ResponseDOs;
 
 namespace DudeWithAnApi.Services
 {
     public interface IQuoteService
     {
-        Task<Quote> GetLatest(string language);
+        Task<QuoteDO> GetLatest(string language);
         Task<IEnumerable<Quote>> GetQuotesAsync();
         Task DeleteQuoteAsync(int id);
         Task<Quote> UpdateQuoteAsync(Quote quote);
         Task ToggleQuoteAsync(int id);
-        Task<IEnumerable<Quote>> GetQuotesPublishedAsync(string language);
-        Task<Quote> GetQuoteTranslatedAsync(int id, string language);
+        Task<List<QuoteDO>> GetQuotesPublishedAsync(string language);
+        Task<QuoteDO> GetQuoteTranslatedAsync(int id, string language);
         Task<IEnumerable<QuoteTranslation>> GetTranslationsByQuoteId(int quoteId);
     }
 
@@ -19,17 +20,20 @@ namespace DudeWithAnApi.Services
     {
         private readonly IQuoteRepository _quoteRepository;
         private readonly IQuoteTranslationRepository _quoteTransRepository;
+        private readonly IQuotePrintService _quotePrintService;
 
-        public QuoteService(IQuoteRepository userRepository, IQuoteTranslationRepository translationRepository)
+        public QuoteService(IQuoteRepository userRepository, IQuoteTranslationRepository translationRepository, IQuotePrintService quotePrintRService)
         {
             _quoteRepository = userRepository;
             _quoteTransRepository = translationRepository;
+            _quotePrintService = quotePrintRService;
         }
 
-        public async Task<Quote> GetLatest(string language)
+        public async Task<QuoteDO> GetLatest(string language)
         {
             var quote = await _quoteRepository.GetLatestAsync();
             var translated = await GetQuoteTranslatedAsync(quote.Id, language);
+            _quotePrintService.AddPrint(quote);
             return translated;
         }
 
@@ -38,37 +42,44 @@ namespace DudeWithAnApi.Services
             return await _quoteRepository.GetQuotesAsync();
         }
 
-        public async Task<IEnumerable<Quote>> GetQuotesPublishedAsync(string language)
+        public async Task<List<QuoteDO>> GetQuotesPublishedAsync(string language)
         {
             IEnumerable<Quote> quotes = await _quoteRepository.GetQuotesPublishedAsync();
+            List<QuoteDO> responseArray = new List<QuoteDO>();
             if (language != "")
             {
                 foreach (Quote quote in quotes)
                 {
-                    QuoteTranslation quoteTranslation = await _quoteTransRepository.GetByQuoteAndLanguageAsync(quote.Id, language);
+                    var response = HydrateResponse(quote);
+
+                    QuoteTranslation quoteTranslation = await _quoteTransRepository.GetByQuoteAndLanguageAsync(response.Id, language);
                     if (quoteTranslation is not null)
                     {
-                        quote.QuoteText = quoteTranslation.PrimaryText;
-                        quote.SecondaryText = quoteTranslation.SecondaryText;
+                        response.QuoteText = quoteTranslation.PrimaryText;
+                        response.SecondaryText = quoteTranslation.SecondaryText;
                     }
+                    responseArray.Add(response);
+                    _quotePrintService.AddPrint(quote);
                 }
             }
-            return quotes;
+            return responseArray;
         }
 
-        public async Task<Quote> GetQuoteTranslatedAsync(int id, string language)
+        public async Task<QuoteDO> GetQuoteTranslatedAsync(int id, string language)
         {
             Quote quote = await _quoteRepository.GetByIdAsync(id);
+            QuoteDO response = HydrateResponse(quote);
+
             if (language != "")
             {
-                QuoteTranslation quoteTranslation = await _quoteTransRepository.GetByQuoteAndLanguageAsync(quote.Id, language);
+                QuoteTranslation quoteTranslation = await _quoteTransRepository.GetByQuoteAndLanguageAsync(id, language);
                 if (quoteTranslation is not null)
                 {
-                    quote.QuoteText = quoteTranslation.PrimaryText;
-                    quote.SecondaryText = quoteTranslation.SecondaryText;
+                    response.QuoteText = quoteTranslation.PrimaryText;
+                    response.SecondaryText = quoteTranslation.SecondaryText;
                 }
             }
-            return quote;
+            return response;
         }
 
         public async Task DeleteQuoteAsync(int id)
@@ -86,7 +97,7 @@ namespace DudeWithAnApi.Services
             var newQuote = await _quoteRepository.UpdateQuoteAsync(quote);
             if (newQuote.IsCSV == 1)
             {
-                _quoteTransRepository.MoveCsvTranslationsAsync(quote.Id, newQuote.Id);
+                await _quoteTransRepository.MoveCsvTranslationsAsync(quote.Id, newQuote.Id);
             }
             
             return newQuote; 
@@ -96,6 +107,19 @@ namespace DudeWithAnApi.Services
         {
             return _quoteTransRepository.FindAsync(t => t.QuoteId == quoteId);
         }
+
+        private QuoteDO HydrateResponse(Quote quote)
+        {
+            QuoteDO quoteDO = new();
+            quoteDO.Id = quote.Id;
+            quoteDO.QuoteText = quote.QuoteText;
+            quoteDO.SecondaryText = quote.SecondaryText;
+            quoteDO.IsActive = quote.IsActive;
+            quoteDO.Url = quote.Url;
+            quoteDO.IsDeleted = quote.IsDeleted;
+            quoteDO.CreationDate = quote.CreationDate;
+            quoteDO.IsCSV = quote.IsCSV;
+            return quoteDO;
+        }
     }
 }
-

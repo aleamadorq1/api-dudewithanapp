@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using DudeWithAnApi.Models;
 using Microsoft.Extensions.Caching.Memory;
 using DudeWithAnApi.ResponseDOs;
@@ -17,15 +15,12 @@ namespace DudeWithAnApi.Controllers
     {
         private readonly IRepository<Quote> _quoteRepository;
         private readonly IQuoteService _quoteService;
-        private readonly IQuotePrintService _quotePrintService;
-        private readonly IMemoryCache _memoryCache;
 
-        public QuoteController(IRepository<Quote> quoteRepository, IQuoteService quoteService, IQuotePrintService quotePrintService, IMemoryCache memoryCache)
+
+        public QuoteController(IRepository<Quote> quoteRepository, IQuoteService quoteService)
         {
             _quoteRepository = quoteRepository;
             _quoteService = quoteService;
-            _quotePrintService = quotePrintService;
-            _memoryCache = memoryCache;
         }
 
         [HttpGet]
@@ -73,7 +68,7 @@ namespace DudeWithAnApi.Controllers
 
         // GET: api/Quote/latest
         [HttpGet("latest")]
-        public async Task<ActionResult<Quote>> GetLatest(string? language)
+        public async Task<ActionResult<QuoteDO>> GetLatest(string? language)
         {
             var quote = await _quoteService.GetLatest(language is null ? "" : language);
 
@@ -81,7 +76,7 @@ namespace DudeWithAnApi.Controllers
             {
                 return NotFound();
             }
-            _quotePrintService.AddPrint(quote);
+
             return Ok(quote);
         }
 
@@ -92,7 +87,6 @@ namespace DudeWithAnApi.Controllers
             quote.IsDeleted = 0;
             quote.CreationDate = DateTime.UtcNow;
             await _quoteRepository.AddAsync(quote);
-            ClearCache();
             return CreatedAtAction("GetQuote", new { id = quote.Id }, quote);
         }
 
@@ -106,7 +100,6 @@ namespace DudeWithAnApi.Controllers
             }
 
             var newQuote = await _quoteService.UpdateQuoteAsync(quote);
-            ClearCache();
             return Ok(newQuote);
         }
 
@@ -121,32 +114,8 @@ namespace DudeWithAnApi.Controllers
             }
 
             await _quoteService.DeleteQuoteAsync(quote.Id);
-            ClearCache();
 
             return NoContent();
         }
-
-        // DELETE: api/Quote/5
-        [HttpPost("{id}/toggle")]
-        public async Task<IActionResult> ToggleQuoteAsync(int id)
-        {
-            var quote = await _quoteRepository.GetByIdAsync(id);
-            if (quote == null)
-            {
-                return NotFound();
-            }
-
-            await _quoteService.ToggleQuoteAsync(quote.Id);
-            ClearCache();
-
-            return NoContent();
-        }
-
-        private void ClearCache()
-        {
-            _memoryCache.Remove("quotes");
-            _memoryCache.Remove("latest_quote");
-        }
-
     }
 }

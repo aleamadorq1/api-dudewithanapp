@@ -1,15 +1,9 @@
 ﻿using System.Net;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using DudeWithAnApi.Repositories;
 using DudeWithAnApi.Services;
 using DudeWithAnApi;
 using Microsoft.EntityFrameworkCore;
-using DudeWithAnApi.Models;
-using Microsoft.AspNetCore.Server.Kestrel.Https;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;

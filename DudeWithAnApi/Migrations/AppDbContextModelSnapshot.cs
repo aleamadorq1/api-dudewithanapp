@@ -71,6 +71,50 @@ namespace DudeWithAnApi.Migrations
                 b.ToTable("QuotePrints");
             });
 
+            modelBuilder.Entity("DudeWithAnApi.Models.AppTranslation", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("INTEGER");
+
+                b.Property<string>("AppName")
+                    .IsRequired()
+                    .HasColumnType("TEXT");
+
+                b.Property<string>("PremiumViewTitle")
+                    .IsRequired()
+                    .HasColumnType("TEXT");
+
+                b.Property<string>("PremiumViewText1")
+                    .IsRequired()
+                    .HasColumnType("TEXT");
+
+                b.Property<string>("PremiumViewText2")
+                    .IsRequired()
+                    .HasColumnType("TEXT");
+
+                b.Property<string>("PremiumViewText3")
+                    .IsRequired()
+                    .HasColumnType("TEXT");
+
+                b.Property<string>("PremiumViewButtonTextTry")
+                    .HasColumnType("TEXT");
+
+                b.Property<string>("PremiumViewButtonTextPatreon")
+                    .HasColumnType("TEXT");
+
+                b.Property<string>("PremiumViewButtonTextRestore")
+                    .HasColumnType("TEXT");
+
+                b.Property<string>("LanguageCode")
+                    .IsRequired()
+                    .HasColumnType("TEXT");
+
+                b.HasKey("Id");
+
+                b.ToTable("AppTranslations");
+            });
+
             modelBuilder.Entity("DudeWithAnApi.Models.QuoteTranslation", b =>
             {
                 b.Property<int>("Id")

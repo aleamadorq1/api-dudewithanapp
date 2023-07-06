@@ -26,10 +26,12 @@ sudo systemctl enable api-dudewithanapp-stage.service
 Stage:
 api-dudewithanapp-stage.service 
 https://dudewithanapp.site/api/stage
+Port 5007 / 5008 https
 
 Prod:
 api-dudewithanapp.service 
 https://dudewithanapp.site/api
+Port: 5001 / 5002 https
 
 Commands:
 sudo systemctl status api-dudewithanapp.service 

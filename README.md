@@ -31,3 +31,6 @@ Prod:
 api-dudewithanapp.service 
 https://dudewithanapp.site/api
 
+Commands:
+sudo systemctl status api-dudewithanapp.service 
+sudo systemctl restart api-dudewithanapp.service 
